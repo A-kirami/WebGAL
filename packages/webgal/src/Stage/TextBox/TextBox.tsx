@@ -52,19 +52,11 @@ export const TextBox = () => {
   const userDataState = useSelector((state: RootState) => state.userData);
   const textDelay = useTextDelay(userDataState.optionData.textSpeed);
   const textDuration = useTextAnimationDuration(userDataState.optionData.textSpeed);
-  let size = getTextSize(userDataState.optionData.textSize) + '%';
+  let size = getTextSize(textSize.small) + '%';
   const font = useFontFamily();
   const isText = stageState.showText !== '' || stageState.showName !== '';
-  let textSizeState = userDataState.optionData.textSize;
-  if (isText && stageState.showTextSize !== -1) {
-    size = getTextSize(stageState.showTextSize) + '%';
-    textSizeState = stageState.showTextSize;
-  }
-  const lineLimit = match(textSizeState)
-    .with(textSize.small, () => 3)
-    .with(textSize.medium, () => 2)
-    .with(textSize.large, () => 2)
-    .default(() => 2);
+  let textSizeState = textSize.small;
+  const lineLimit = 3;
   // 拆字
   const textArray = compileSentence(stageState.showText, lineLimit);
   const isHasName = stageState.showName !== '';
