@@ -140,10 +140,28 @@ export function compileSentence(
 }
 
 /**
+ * 仿 Bandori 游戏风格的文本字符分割
  * @param sentence
  * @param replace_space_with_nbsp
  */
-export function splitChars(sentence: string, replace_space_with_nbsp = true) {
+export function splitChars(sentence: string, replace_space_with_nbsp = true): string[] {
+  if (!sentence) return ['']; // 如果输入为空，返回包含一个空字符串的数组
+
+  return Array.from(sentence).map((character) => {
+    if (character === ' ' || character === '\u00a0') {
+      // 如果是空格，根据参数决定是否替换为 \u00a0
+      return replace_space_with_nbsp ? '\u00a0' : character;
+    }
+    return character; // 其他字符直接返回
+  });
+}
+
+/**
+ * @deprecated 弃用原版字符分割
+ * @param sentence
+ * @param replace_space_with_nbsp
+ */
+export function splitCharsDeprecated(sentence: string, replace_space_with_nbsp = true) {
   if (!sentence) return [''];
   const words: string[] = [];
   let word = '';
