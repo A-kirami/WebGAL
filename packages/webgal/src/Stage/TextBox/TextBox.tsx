@@ -20,9 +20,35 @@ export interface EnhancedNode {
 }
 
 export const TextBox = () => {
+  const stageState = useSelector((state: RootState) => state.stage);
+  const guiState = useSelector((state: RootState) => state.GUI);
+  const userDataState = useSelector((state: RootState) => state.userData);
+  const textDelay = useTextDelay(userDataState.optionData.textSpeed);
+  const textDuration = useTextAnimationDuration(userDataState.optionData.textSpeed);
+  let size = getTextSize(textSize.small) + '%';
+  const font = useFontFamily();
+  const isText = stageState.showText !== '' || stageState.showName !== '';
+  let textSizeState = textSize.small;
+  const lineLimit = 3;
+  // 拆字
+  const textArray = compileSentence(stageState.showText, lineLimit);
+  const isHasName = stageState.showName !== '';
+  const showName = compileSentence(stageState.showName, lineLimit);
+  const currentConcatDialogPrev = stageState.currentConcatDialogPrev;
+  const currentDialogKey = stageState.currentDialogKey;
+  const miniAvatar = stageState.miniAvatar;
+  const textboxOpacity = userDataState.optionData.textboxOpacity;
+  const Textbox = IMSSTextbox;
+  const fontOptimization = guiState.fontOptimization;
+
   const [isShowStroke, setIsShowStroke] = useState(true);
 
   useEffect(() => {
+    if (!fontOptimization) {
+      setIsShowStroke(true);
+      return;
+    }
+
     const handleResize = () => {
       const targetHeight = SCREEN_CONSTANTS.height;
       const targetWidth = SCREEN_CONSTANTS.width;
@@ -46,26 +72,8 @@ export const TextBox = () => {
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, []);
+  }, [fontOptimization]);
 
-  const stageState = useSelector((state: RootState) => state.stage);
-  const userDataState = useSelector((state: RootState) => state.userData);
-  const textDelay = useTextDelay(userDataState.optionData.textSpeed);
-  const textDuration = useTextAnimationDuration(userDataState.optionData.textSpeed);
-  let size = getTextSize(textSize.small) + '%';
-  const font = useFontFamily();
-  const isText = stageState.showText !== '' || stageState.showName !== '';
-  let textSizeState = textSize.small;
-  const lineLimit = 3;
-  // 拆字
-  const textArray = compileSentence(stageState.showText, lineLimit);
-  const isHasName = stageState.showName !== '';
-  const showName = compileSentence(stageState.showName, lineLimit);
-  const currentConcatDialogPrev = stageState.currentConcatDialogPrev;
-  const currentDialogKey = stageState.currentDialogKey;
-  const miniAvatar = stageState.miniAvatar;
-  const textboxOpacity = userDataState.optionData.textboxOpacity;
-  const Textbox = IMSSTextbox;
   return (
     <Textbox
       textArray={textArray}
