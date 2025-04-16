@@ -27,6 +27,8 @@ export const initState: IStageState = {
   figName: '', // 立绘_中 文件地址（相对或绝对）
   figNameLeft: '', // 立绘_左 文件地址（相对或绝对）
   figNameRight: '', // 立绘_右 文件地址（相对或绝对）
+  figNameFarLeft: '', // 立绘_最左 文件地址（相对或绝对）
+  figNameFarRight: '', // 立绘_最右 文件地址（相对或绝对）
   freeFigure: [],
   figureAssociatedAnimation: [],
   showText: '', // 文字
@@ -101,6 +103,8 @@ const stageSlice = createSlice({
         STAGE_KEYS.FIG_C,
         STAGE_KEYS.FIG_L,
         STAGE_KEYS.FIG_R,
+        STAGE_KEYS.FIG_FL,
+        STAGE_KEYS.FIG_FR,
         ...state.freeFigure.map((figure) => figure.key),
       ];
       if (!activeTargets.includes(target)) return;

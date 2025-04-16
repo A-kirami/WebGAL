@@ -71,8 +71,10 @@ export const baseTransform: ITransform = {
   blur: 0,
 };
 
+export type IPosition = 'center' | 'left' | 'right' | 'far-left' | 'far-right';
+
 export interface IFreeFigure {
-  basePosition: 'left' | 'center' | 'right';
+  basePosition: IPosition;
   name: string;
   key: string;
 }
@@ -131,6 +133,8 @@ export interface IStageState {
   figName: string; // 立绘_中 文件地址（相对或绝对）
   figNameLeft: string; // 立绘_左 文件地址（相对或绝对）
   figNameRight: string; // 立绘_右 文件地址（相对或绝对）
+  figNameFarLeft: string; // 立绘_左 文件地址（相对或绝对）
+  figNameFarRight: string; // 立绘_右 文件地址（相对或绝对）
   // 自由立绘
   freeFigure: Array<IFreeFigure>;
   figureAssociatedAnimation: Array<IFigureAssociatedAnimation>;

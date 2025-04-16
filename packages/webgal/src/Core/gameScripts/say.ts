@@ -103,6 +103,12 @@ export const say = (sentence: ISentence): IPerform => {
         .with('right', () => {
           pos = 'right';
         })
+        .with('far-left', () => {
+          pos = 'far-left';
+        })
+        .with('far-right', () => {
+          pos = 'far-right';
+        })
         .endsWith('center', () => {
           pos = 'center';
         });

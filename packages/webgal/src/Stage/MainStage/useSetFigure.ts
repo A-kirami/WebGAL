@@ -9,7 +9,16 @@ import { getEnterExitAnimation } from '@/Core/Modules/animationFunctions';
 import { WebGAL } from '@/Core/WebGAL';
 
 export function useSetFigure(stageState: IStageState) {
-  const { figNameLeft, figName, figNameRight, freeFigure, live2dMotion, live2dExpression } = stageState;
+  const {
+    figNameLeft,
+    figName,
+    figNameRight,
+    freeFigure,
+    live2dMotion,
+    live2dExpression,
+    figNameFarLeft,
+    figNameFarRight,
+  } = stageState;
 
   /**
    * 同步 motion
@@ -119,6 +128,63 @@ export function useSetFigure(stageState: IStageState) {
   }, [figNameRight]);
 
   useEffect(() => {
+    /**
+     * 特殊处理：最左侧立绘
+     */
+    const thisFigKey = 'fig-far-left';
+    const softInAniKey = 'fig-far-left-softin';
+    if (figNameFarLeft !== '') {
+      const currentFigFarLeft = WebGAL.gameplay.pixiStage?.getStageObjByKey(thisFigKey);
+      if (currentFigFarLeft) {
+        if (currentFigFarLeft.sourceUrl !== figNameFarLeft) {
+          removeFig(currentFigFarLeft, softInAniKey, stageState.effects);
+        }
+      }
+      addFigure(undefined, thisFigKey, figNameFarLeft, 'far-left');
+      logger.debug('最左立绘已重设');
+      const { duration, animation } = getEnterExitAnimation(thisFigKey, 'enter');
+      WebGAL.gameplay.pixiStage!.registerPresetAnimation(animation, softInAniKey, thisFigKey, stageState.effects);
+      setTimeout(() => WebGAL.gameplay.pixiStage!.removeAnimationWithSetEffects(softInAniKey), duration);
+    } else {
+      logger.debug('移除最左立绘');
+      const currentFigFarLeft = WebGAL.gameplay.pixiStage?.getStageObjByKey(thisFigKey);
+      if (currentFigFarLeft) {
+        if (currentFigFarLeft.sourceUrl !== figNameFarLeft) {
+          removeFig(currentFigFarLeft, softInAniKey, stageState.effects);
+        }
+      }
+    }
+  }, [figNameFarLeft]);
+
+  useEffect(() => {
+    /**
+     * 特殊处理：最右侧立绘
+     */
+    const thisFigKey = 'fig-far-right';
+    const softInAniKey = 'fig-far-right-softin';
+    if (figNameFarRight !== '') {
+      const currentFigFarRight = WebGAL.gameplay.pixiStage?.getStageObjByKey(thisFigKey);
+      if (currentFigFarRight) {
+        if (currentFigFarRight.sourceUrl !== figNameFarRight) {
+          removeFig(currentFigFarRight, softInAniKey, stageState.effects);
+        }
+      }
+      addFigure(undefined, thisFigKey, figNameFarRight, 'far-right');
+      logger.debug('最右立绘已重设');
+      const { duration, animation } = getEnterExitAnimation(thisFigKey, 'enter');
+      WebGAL.gameplay.pixiStage!.registerPresetAnimation(animation, softInAniKey, thisFigKey, stageState.effects);
+      setTimeout(() => WebGAL.gameplay.pixiStage!.removeAnimationWithSetEffects(softInAniKey), duration);
+    } else {
+      const currentFigFarRight = WebGAL.gameplay.pixiStage?.getStageObjByKey(thisFigKey);
+      if (currentFigFarRight) {
+        if (currentFigFarRight.sourceUrl !== figNameFarRight) {
+          removeFig(currentFigFarRight, softInAniKey, stageState.effects);
+        }
+      }
+    }
+  }, [figNameFarRight]);
+
+  useEffect(() => {
     // 自由立绘
     for (const fig of freeFigure) {
       /**
@@ -167,6 +233,8 @@ export function useSetFigure(stageState: IStageState) {
           existFigure.key === 'fig-left' ||
           existFigure.key === 'fig-center' ||
           existFigure.key === 'fig-right' ||
+          existFigure.key === 'fig-far-left' ||
+          existFigure.key === 'fig-far-right' ||
           existFigure.key.endsWith('-off')
         ) {
           // 什么也不做

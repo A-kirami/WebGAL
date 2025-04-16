@@ -50,6 +50,12 @@ export const playVocal = (sentence: ISentence) => {
         .with('right', () => {
           pos = 'right';
         })
+        .with('far-left', () => {
+          pos = 'far-left';
+        })
+        .with('far-right', () => {
+          pos = 'far-right';
+        })
         .endsWith('center', () => {
           pos = 'center';
         });

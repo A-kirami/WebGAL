@@ -4,7 +4,7 @@ import { webgalStore } from '@/store/store';
 import { setStage, stageActions } from '@/store/stageReducer';
 import cloneDeep from 'lodash/cloneDeep';
 import { getSentenceArgByKey } from '@/Core/util/getSentenceArg';
-import { IFreeFigure, IStageState, ITransform } from '@/store/stageInterface';
+import { IFreeFigure, IStageState, ITransform, IPosition } from '@/store/stageInterface';
 import { IUserAnimation } from '@/Core/Modules/animations';
 import { generateTransformAnimationObj } from '@/Core/controller/stage/pixi/animations/generateTransformAnimationObj';
 import { assetSetter, fileType } from '@/Core/util/gameAssetsAccess/assetSetter';
@@ -18,7 +18,7 @@ import { WebGAL } from '@/Core/WebGAL';
 // eslint-disable-next-line complexity
 export function changeFigure(sentence: ISentence): IPerform {
   // 根据参数设置指定位置
-  let pos: 'center' | 'left' | 'right' = 'center';
+  let pos: IPosition = 'center';
   let content = sentence.content;
   let isFreeFigure = false;
   let motion = '';
@@ -51,6 +51,16 @@ export function changeFigure(sentence: ISentence): IPerform {
           pos = 'right';
           mouthAnimationKey = 'mouthAnimationRight';
           eyesAnimationKey = 'blinkAnimationRight';
+        }
+        break;
+      case 'far-left':
+        if (e.value === true) {
+          pos = 'far-left';
+        }
+        break;
+      case 'far-right':
+        if (e.value === true) {
+          pos = 'far-right';
         }
         break;
       case 'clear':
@@ -137,20 +147,16 @@ export function changeFigure(sentence: ISentence): IPerform {
       }
     }
   } else {
-    if (pos === 'center') {
-      if (webgalStore.getState().stage.figName === sentence.content) {
-        isRemoveEffects = false;
-      }
-    }
-    if (pos === 'left') {
-      if (webgalStore.getState().stage.figNameLeft === sentence.content) {
-        isRemoveEffects = false;
-      }
-    }
-    if (pos === 'right') {
-      if (webgalStore.getState().stage.figNameRight === sentence.content) {
-        isRemoveEffects = false;
-      }
+    if (pos === 'center' && webgalStore.getState().stage.figName === sentence.content) {
+      isRemoveEffects = false;
+    } else if (pos === 'left' && webgalStore.getState().stage.figNameLeft === sentence.content) {
+      isRemoveEffects = false;
+    } else if (pos === 'right' && webgalStore.getState().stage.figNameRight === sentence.content) {
+      isRemoveEffects = false;
+    } else if (pos === 'far-left' && webgalStore.getState().stage.figNameFarLeft === sentence.content) {
+      isRemoveEffects = false;
+    } else if (pos === 'far-right' && webgalStore.getState().stage.figNameFarRight === sentence.content) {
+      isRemoveEffects = false;
     }
   }
   /**
@@ -244,11 +250,15 @@ export function changeFigure(sentence: ISentence): IPerform {
       center: 'fig-center',
       left: 'fig-left',
       right: 'fig-right',
+      'far-left': 'fig-far-left',
+      'far-right': 'fig-far-right',
     };
     const dispatchMap: Record<string, keyof IStageState> = {
       center: 'figName',
       left: 'figNameLeft',
       right: 'figNameRight',
+      'far-left': 'figNameFarLeft',
+      'far-right': 'figNameFarRight',
     };
 
     key = positionMap[pos];
