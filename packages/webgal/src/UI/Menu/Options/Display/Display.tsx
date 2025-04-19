@@ -33,7 +33,7 @@ export function Display() {
           currentChecked={userDataState.optionData.fullScreen}
         />
       </NormalOption>
-      <NormalOption key="textSize" title={t('textSize.title')}>
+      {/* <NormalOption key="textSize" title={t('textSize.title')}>
         <NormalButton
           textList={t('textSize.options.small', 'textSize.options.medium', 'textSize.options.large')}
           functionList={[
@@ -52,8 +52,8 @@ export function Display() {
           ]}
           currentChecked={userDataState.optionData.textSize}
         />
-      </NormalOption>
-      <NormalOption key="textFont" title={t('textFont.title')}>
+      </NormalOption> */}
+      {/* <NormalOption key="textFont" title={t('textFont.title')}>
         <NormalButton
           textList={t('textFont.options.siYuanSimSun', 'textFont.options.SimHei', 'textFont.options.lxgw')}
           functionList={[
@@ -72,7 +72,7 @@ export function Display() {
           ]}
           currentChecked={userDataState.optionData.textboxFont}
         />
-      </NormalOption>
+      </NormalOption> */}
       <NormalOption key="textSpeed" title={t('textSpeed.title')}>
         <OptionSlider
           initValue={userDataState.optionData.textSpeed}
@@ -84,7 +84,7 @@ export function Display() {
           }}
         />
       </NormalOption>
-      <NormalOption key="textboxOpacity" title={t('textboxOpacity.title')}>
+      {/* <NormalOption key="textboxOpacity" title={t('textboxOpacity.title')}>
         <OptionSlider
           initValue={userDataState.optionData.textboxOpacity}
           uniqueID={t('textboxOpacity.title')}
@@ -94,7 +94,7 @@ export function Display() {
             setStorage();
           }}
         />
-      </NormalOption>
+      </NormalOption> */}
       <NormalOption full key="textPreview" title={t('textPreview.title')}>
         {/* 这是一个临时的组件，用于模拟文本预览的效果 */}
         <TextPreview />
