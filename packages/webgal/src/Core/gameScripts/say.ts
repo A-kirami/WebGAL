@@ -149,7 +149,8 @@ export const say = (sentence: ISentence): IPerform => {
   if (vocal) {
     playVocal(sentence);
   } else if (key || pos) {
-    performSimulateVocalDelay = len * 250;
+    // NOTE: 不使用模拟语音延迟
+    // performSimulateVocalDelay = len * 250;
     performSimulateVocal();
   }
 
