@@ -173,7 +173,7 @@ export function changeFigure(sentence: ISentence): IPerform {
   }
   const setAnimationNames = (key: string, sentence: ISentence) => {
     // 处理 transform 和 默认 transform
-    const transformString = getSentenceArgByKey(sentence, 'transform') ?? '';
+    const transformString = getSentenceArgByKey(sentence, 'transform');
     const durationFromArg = getSentenceArgByKey(sentence, 'duration');
     if (durationFromArg && typeof durationFromArg === 'number') {
       duration = durationFromArg;
@@ -181,40 +181,30 @@ export function changeFigure(sentence: ISentence): IPerform {
     let animationObj: (ITransform & {
       duration: number;
     })[];
-    try {
-      const frame = JSON.parse(transformString.toString()) as ITransform & { duration: number };
-      applyTransform(pos, frame);
-    } catch (e) {
-      // 解析都错误了，歇逼吧
-      applyTransform(pos);
+    if (transformString) {
+      console.log(transformString);
+      try {
+        const frame = JSON.parse(transformString.toString()) as ITransform & { duration: number };
+        animationObj = generateTransformAnimationObj(key, frame, duration);
+        // 因为是切换，必须把一开始的 alpha 改为 0
+        animationObj[0].alpha = 0;
+        const animationName = (Math.random() * 10).toString(16);
+        const newAnimation: IUserAnimation = { name: animationName, effects: animationObj };
+        WebGAL.animationManager.addAnimation(newAnimation);
+        duration = getAnimateDuration(animationName);
+        WebGAL.animationManager.nextEnterAnimationName.set(key, animationName);
+      } catch (e) {
+        // 解析都错误了，歇逼吧
+        applyDefaultTransform();
+      }
+    } else {
+      applyDefaultTransform();
     }
 
-    function applyTransform(pos: IPosition = 'center', transformFrame?: ITransform & { duration: number }) {
-      let frame = {} as unknown as ITransform & {
-        duration: number;
-      };
-      if (sentence.content.endsWith('.json')) {
-        const positionXMap: Record<IPosition, number> = {
-          center: 220,
-          left: -200,
-          'far-left': -500,
-          right: 640,
-          'far-right': 940,
-        };
-        frame = {
-          position: { x: positionXMap[pos], y: -190 },
-          scale: { x: 0.83, y: 0.83 },
-        } as unknown as ITransform & {
-          duration: number;
-        };
-        if (transformFrame) {
-          frame.position.x += transformFrame.position.x;
-          frame.position.y += transformFrame.position.y;
-          frame.scale.x *= transformFrame.scale.x;
-          frame.scale.y *= transformFrame.scale.y;
-        }
-      }
-      animationObj = generateTransformAnimationObj(key, frame, duration);
+    function applyDefaultTransform() {
+      // 应用默认的
+      const frame = {};
+      animationObj = generateTransformAnimationObj(key, frame as ITransform & { duration: number }, duration);
       // 因为是切换，必须把一开始的 alpha 改为 0
       animationObj[0].alpha = 0;
       const animationName = (Math.random() * 10).toString(16);
@@ -223,7 +213,6 @@ export function changeFigure(sentence: ISentence): IPerform {
       duration = getAnimateDuration(animationName);
       WebGAL.animationManager.nextEnterAnimationName.set(key, animationName);
     }
-
     const enterAnim = getSentenceArgByKey(sentence, 'enter');
     const exitAnim = getSentenceArgByKey(sentence, 'exit');
     if (enterAnim) {

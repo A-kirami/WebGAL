@@ -663,7 +663,7 @@ export default class PixiStage {
               const scaleX = stageWidth / model.width;
               const scaleY = stageHeight / model.height;
               const targetScale = Math.min(scaleX, scaleY) * 1.5;
-              // const targetWidth = model.width * targetScale;
+              const targetWidth = model.width * targetScale;
               // const targetHeight = model.height * targetScale;
 
               model.scale.set(targetScale);
@@ -671,12 +671,12 @@ export default class PixiStage {
               model.position.x = stageWidth / 2;
               model.position.y = stageHeight / 1.2;
 
-              // if (pos === 'left') {
-              //   model.position.x = targetWidth / 2;
-              // }
-              // if (pos === 'right') {
-              //   model.position.x = stageWidth - targetWidth / 2;
-              // }
+              if (pos === 'left') {
+                model.position.x = targetWidth / 2;
+              }
+              if (pos === 'right') {
+                model.position.x = stageWidth - targetWidth / 2;
+              }
 
               let motionToSet = motion;
               let animation_index = 0;
