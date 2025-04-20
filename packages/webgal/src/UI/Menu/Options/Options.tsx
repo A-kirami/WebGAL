@@ -7,6 +7,7 @@ import { Display } from '@/UI/Menu/Options/Display/Display';
 import { Sound } from '@/UI/Menu/Options/Sound/Sound';
 import useTrans from '@/hooks/useTrans';
 import useSoundEffect from '@/hooks/useSoundEffect';
+import titleIcon from '@/assets/image/title-icon.png';
 
 enum optionPage {
   'System',
@@ -30,6 +31,7 @@ export const Options: FC = () => {
   return (
     <div className={styles.Options_main}>
       <div className={styles.Options_top}>
+        <img className={styles.Options_icon} src={titleIcon} alt="title-icon" />
         <div className={styles.Options_title}>
           <div className={styles.Option_title_text}>{t('title')}</div>
         </div>

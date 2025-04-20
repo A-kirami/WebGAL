@@ -1,21 +1,17 @@
 .NormalOption {
-  margin: 0.2em 1em 0.2em 1em;
-  padding: 0.2em 0.2em 0.2em 0.2em;
   display: flex;
   flex-flow: column;
   align-items: flex-start;
-  animation: Elements_in ease-out 0.7s forwards;
+  gap: 2rem;
 }
 
 .NormalOption_title {
-  //color: rgba(81, 110, 65, 0.9);
-  color: transparent;
-  background: linear-gradient(to left, #227D51, rgba(81, 110, 65, 1));
-  -webkit-background-clip: text;
-  font-size: 200%;
-  //border-bottom: 2px solid rgba(81, 110, 65, 0.9);
-  padding: 0.15em 0.5em 0.15em 0.1em;
-  font-weight: bold;
+  color: #ffffff;
+  background: #505050;
+  font-size: 160%;
+  padding: 0.15em 1em;
+  width: 100%;
+  border-radius: 999px;
 }
 
 .NormalOption_title_bef {
@@ -47,18 +43,7 @@
 }
 
 .NormalOption_buttonList {
-  padding: 0.5em 0 0.5em 0;
   display: flex;
-}
-
-@keyframes Elements_in {
-  0% {
-    opacity: 0;
-    transform: scale(1.03, 1.03) translate(-25px, -20px);
-  }
-
-  100% {
-    opacity: 1;
-    transform: scale(1, 1) translate(0, 0);
-  }
+  gap: 2rem;
+  padding: 0 3rem;
 }

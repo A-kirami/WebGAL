@@ -18,7 +18,7 @@ import { WebGAL } from '@/Core/WebGAL';
 import useSoundEffect from '@/hooks/useSoundEffect';
 import savesReducer, { ISavesData, saveActions } from '@/store/savesReducer';
 import { dumpFastSaveToStorage, dumpSavesToStorage } from '@/Core/controller/storage/savesController';
-import { OptionSlider } from '@/UI/Menu/Options/OptionSlider';
+import { CustomSlider } from '@/UI/Menu/Options/CustomSlider';
 
 interface IExportGameData {
   userData: IUserData;
@@ -105,12 +105,10 @@ export function System() {
       {!showAbout && (
         <>
           <NormalOption key="option1" title={t('autoSpeed.title')}>
-            <OptionSlider
-              initValue={userDataState.optionData.autoSpeed}
-              uniqueID={t('autoSpeed.title')}
-              onChange={(event) => {
-                const newValue = event.target.value;
-                dispatch(setOptionData({ key: 'autoSpeed', value: Number(newValue) }));
+            <CustomSlider
+              value={userDataState.optionData.autoSpeed}
+              onChange={(newValue: number) => {
+                dispatch(setOptionData({ key: 'autoSpeed', value: newValue }));
                 setStorage();
               }}
             />
@@ -186,9 +184,9 @@ export function System() {
               currentChecked={2}
             />
           </NormalOption>
-          <div className={styles.About_title_text} onClick={toggleAbout}>
+          {/* <div className={styles.About_title_text} onClick={toggleAbout}>
             <span className={styles.About_text}>{t('about.title')}</span>
-          </div>
+          </div> */}
         </>
       )}
     </div>

@@ -1,6 +1,6 @@
 import styles from '@/UI/Menu/Options/options.module.scss';
 import { NormalOption } from '@/UI/Menu/Options/NormalOption';
-import { OptionSlider } from '@/UI/Menu/Options/OptionSlider';
+import { CustomSlider } from '@/UI/Menu/Options/CustomSlider';
 import { NormalButton } from '@/UI/Menu/Options//NormalButton';
 import { setOptionData } from '@/store/userDataReducer';
 import { setStorage } from '@/Core/controller/storage/storageController';
@@ -17,56 +17,46 @@ export function Sound() {
   return (
     <div className={styles.Options_main_content_half}>
       <NormalOption key="option4" title={t('volumeMain.title')}>
-        <OptionSlider
-          initValue={userDataState.optionData.volumeMain}
-          uniqueID={t('volumeMain.title')}
-          onChange={(event) => {
-            const newValue = event.target.value;
-            dispatch(setOptionData({ key: 'volumeMain', value: Number(newValue) }));
+        <CustomSlider
+          value={userDataState.optionData.volumeMain}
+          onChange={(newValue) => {
+            dispatch(setOptionData({ key: 'volumeMain', value: newValue }));
             setStorage();
           }}
         />
       </NormalOption>
       <NormalOption key="option5" title={t('vocalVolume.title')}>
-        <OptionSlider
-          initValue={userDataState.optionData.vocalVolume}
-          uniqueID={t('vocalVolume.title')}
-          onChange={(event) => {
-            const newValue = event.target.value;
-            dispatch(setOptionData({ key: 'vocalVolume', value: Number(newValue) }));
+        <CustomSlider
+          value={userDataState.optionData.vocalVolume}
+          onChange={(newValue) => {
+            dispatch(setOptionData({ key: 'vocalVolume', value: newValue }));
             setStorage();
           }}
         />
       </NormalOption>
       <NormalOption key="option6" title={t('bgmVolume.title')}>
-        <OptionSlider
-          initValue={userDataState.optionData.bgmVolume}
-          uniqueID={t('bgmVolume.title')}
-          onChange={(event) => {
-            const newValue = event.target.value;
-            dispatch(setOptionData({ key: 'bgmVolume', value: Number(newValue) }));
+        <CustomSlider
+          value={userDataState.optionData.bgmVolume}
+          onChange={(newValue) => {
+            dispatch(setOptionData({ key: 'bgmVolume', value: newValue }));
             setStorage();
           }}
         />
       </NormalOption>
       <NormalOption key="option7" title={t('seVolume.title')}>
-        <OptionSlider
-          initValue={userDataState.optionData.seVolume}
-          uniqueID={t('seVolume.title')}
-          onChange={(event) => {
-            const newValue = event.target.value;
-            dispatch(setOptionData({ key: 'seVolume', value: Number(newValue) }));
+        <CustomSlider
+          value={userDataState.optionData.seVolume}
+          onChange={(newValue) => {
+            dispatch(setOptionData({ key: 'seVolume', value: newValue }));
             setStorage();
           }}
         />
       </NormalOption>
       <NormalOption key="option8" title={t('uiSeVolume.title')}>
-        <OptionSlider
-          initValue={userDataState.optionData.uiSeVolume}
-          uniqueID={t('uiSeVolume.title')}
-          onChange={(event) => {
-            const newValue = event.target.value;
-            dispatch(setOptionData({ key: 'uiSeVolume', value: Number(newValue) }));
+        <CustomSlider
+          value={userDataState.optionData.uiSeVolume}
+          onChange={(newValue) => {
+            dispatch(setOptionData({ key: 'uiSeVolume', value: newValue }));
             setStorage();
           }}
         />

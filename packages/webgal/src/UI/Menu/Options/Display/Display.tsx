@@ -8,7 +8,7 @@ import { fullScreenOption, playSpeed, textFont, textSize } from '@/store/userDat
 import { setStorage } from '@/Core/controller/storage/storageController';
 import { TextPreview } from '@/UI/Menu/Options/TextPreview/TextPreview';
 import useTrans from '@/hooks/useTrans';
-import { OptionSlider } from '../OptionSlider';
+import { CustomSlider } from '@/UI/Menu/Options/CustomSlider';
 
 export function Display() {
   const userDataState = useSelector((state: RootState) => state.userData);
@@ -74,12 +74,10 @@ export function Display() {
         />
       </NormalOption> */}
       <NormalOption key="textSpeed" title={t('textSpeed.title')}>
-        <OptionSlider
-          initValue={userDataState.optionData.textSpeed}
-          uniqueID={t('textSpeed.title')}
-          onChange={(event) => {
-            const newValue = event.target.value;
-            dispatch(setOptionData({ key: 'textSpeed', value: Number(newValue) }));
+        <CustomSlider
+          value={userDataState.optionData.textSpeed}
+          onChange={(newValue) => {
+            dispatch(setOptionData({ key: 'textSpeed', value: newValue }));
             setStorage();
           }}
         />
