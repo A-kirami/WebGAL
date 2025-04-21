@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react';
+import { FC, CSSProperties } from 'react';
 import styles from './title.module.scss';
 import { playBgm } from '@/Core/controller/stage/playBgm';
 import { continueGame, startGame } from '@/Core/controller/gamePlay/startContinueGame';
@@ -59,7 +59,14 @@ const Title: FC = () => {
             backgroundSize: 'cover',
           }}
         >
-          <div className={applyStyle('Title_buttonList', styles.Title_buttonList)}>
+          <div
+            className={applyStyle('Title_buttonList', styles.Title_buttonList)}
+            style={
+              {
+                '--title-button-gap': GUIState.enableAppreciationMode ? '4rem' : '8rem',
+              } as unknown as CSSProperties
+            }
+          >
             <div
               className={applyStyle('Title_button', styles.Title_button)}
               onClick={() => {
