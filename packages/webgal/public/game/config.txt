@@ -3,4 +3,6 @@ Game_key:;
 Title_img:WebGAL_New_Enter_Image.png;
 Title_bgm:s_Title.mp3;
 Game_Logo:WebGalEnter.png;
-Enable_Appreciation:true;
+Show_panic:false;
+Enable_Appreciation:false;
+Use_BandoriCraft:true;
