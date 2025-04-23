@@ -662,14 +662,14 @@ export default class PixiStage {
             models.forEach((model) => {
               const scaleX = stageWidth / model.width;
               const scaleY = stageHeight / model.height;
-              const targetScale = Math.min(scaleX, scaleY);
-              const targetWidth = model.width * targetScale;
+              const targetScale = Math.min(scaleX, scaleY) * 1.25;
+              // const targetWidth = model.width * targetScale;
               const targetHeight = model.height * targetScale;
               model.scale.x = targetScale;
               model.scale.y = targetScale;
               model.anchor.set(0.5);
-              model.position.x = 0;
-              model.position.y = stageHeight / 2;
+              // model.position.x = 0;
+              model.position.y = stageHeight / 1.8;
 
               let baseY = stageHeight / 2;
               if (targetHeight < stageHeight) {
@@ -679,9 +679,9 @@ export default class PixiStage {
               if (pos === 'center') {
                 thisFigureContainer.setBaseX(stageWidth / 2);
               } else if (pos === 'left') {
-                thisFigureContainer.setBaseX(targetWidth / 2);
+                thisFigureContainer.setBaseX(850);
               } else if (pos === 'right') {
-                thisFigureContainer.setBaseX(stageWidth - targetWidth / 2);
+                thisFigureContainer.setBaseX(1710);
               }
 
               thisFigureContainer.pivot.set(0, stageHeight / 2);
