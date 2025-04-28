@@ -39,7 +39,7 @@
     position: absolute;
     top: 0;
     opacity: 0;
-    background: linear-gradient(165deg,rgba(255,255,255,0.25) 0%,rgba(255,255,255,1) 50%,rgba(255,255,255,0.25) 100%);
+    background: #ffffff;
     transition: opacity 1s;
 "></div>
     <!--    落地页文字-->
@@ -47,9 +47,9 @@
     position: absolute;
     top: 0;
     height: 100%;
-    opacity: 1;
+    opacity: 0;
     font-size: 175%;
-    transition: opacity 1s;
+    transition: opacity 1s ease-in;
     z-index: 15;
     font-family: '思源宋体',Georgia,serif">
       <div class="toCenter" style="
@@ -173,7 +173,16 @@
       // 将该标签添加到 head 中
       document.getElementsByTagName('head')[0].appendChild(meta);
       resize();
-      window.onload = resize;
+      window.onload = function() {
+        resize();
+        // 等待一小段时间确保字体加载完成，然后显示文本
+        setTimeout(() => {
+          const enterText = document.getElementById("Title_enter_text");
+          if (enterText) {
+            enterText.style.opacity = "1";
+          }
+        }, 250);
+      };
       window.onresize = resize;
       // 监听键盘 F11 事件，全屏时触发页面调整
       document.onkeydown = function (event) {
@@ -298,16 +307,16 @@
       setTimeout(() => {
         if (title)
           title.style.opacity = "0";
-      }, 500); //500ms后开始降低落地页透明度
+      }, 1500); //500ms后开始降低落地页透明度
       if (!isIOS && title) {
         title.style.pointerEvents = "none"; //落地页不再响应点击
-        title.style.background = "linear-gradient( #a1c4fd 0%, #c2e9fb 100%)"; //改变标题渐变效果
+        //title.style.background = "linear-gradient( #a1c4fd 0%, #c2e9fb 100%)"; //改变标题渐变效果
       }
       setTimeout(() => {
         if (title) {
           title.style.display = "none";
         }
-      }, 2000); // 将落地页设置为不显示
+      }, 2500); // 将落地页设置为不显示
       window.enterPromise();
       delete window.enterPromise;
     }

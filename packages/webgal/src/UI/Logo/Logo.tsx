@@ -14,7 +14,7 @@ const Logo: FC = () => {
   const isEnterGame = GUIState.isEnterGame;
   const currentLogoIndex = useValue(-1);
   const currentTimeOutId = useValue<any>(-1);
-  const animationDuration = 5000;
+  const animationDuration = 6500;
 
   const nextImg = () => {
     clearTimeout(currentTimeOutId.value);

@@ -6,7 +6,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  animation: change-img-anim 5s forwards;
+  animation: change-img-anim 6.5s forwards;
   background-size: cover;
   z-index: 14;
 }
@@ -43,7 +43,7 @@
 }
 
 .animationActive{
-  animation: fadeout 5s forwards;
+  animation: fadeout 6.5s forwards;
 }
 
 @keyframes fadeout {
