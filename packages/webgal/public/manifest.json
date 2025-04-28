@@ -1,9 +1,9 @@
 {
-  "name": "WebGAL Bandori Craft Engine",
-  "short_name": "Bandori Craft",
+  "name": "WebGAL BandoriCraft Engine",
+  "short_name": "BandoriCraft",
   "start_url": ".",
   "display": "fullscreen",
-  "description": "Bandori Craft DEMO",
+  "description": "BandoriCraft DEMO",
   "dir": "auto",
   "orientation": "landscape",
   "icons": [
