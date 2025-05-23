@@ -33,7 +33,7 @@ export function Display() {
           currentChecked={userDataState.optionData.fullScreen}
         />
       </NormalOption>
-      {/* <NormalOption key="textSize" title={t('textSize.title')}>
+      <NormalOption key="textSize" title={t('textSize.title')}>
         <NormalButton
           textList={t('textSize.options.small', 'textSize.options.medium', 'textSize.options.large')}
           functionList={[
@@ -52,7 +52,7 @@ export function Display() {
           ]}
           currentChecked={userDataState.optionData.textSize}
         />
-      </NormalOption> */}
+      </NormalOption>
       {/* <NormalOption key="textFont" title={t('textFont.title')}>
         <NormalButton
           textList={t('textFont.options.siYuanSimSun', 'textFont.options.SimHei', 'textFont.options.lxgw')}

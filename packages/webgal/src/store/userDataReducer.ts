@@ -26,7 +26,7 @@ const initialOptionSet: IOptionData = {
   volumeMain: 100, // 主音量
   textSpeed: 30, // 文字速度
   autoSpeed: 20, // 自动播放速度
-  textSize: textSize.medium,
+  textSize: textSize.small,
   vocalVolume: 100, // 语音音量
   bgmVolume: 25, // 背景音乐音量
   seVolume: 100, // 音效音量
