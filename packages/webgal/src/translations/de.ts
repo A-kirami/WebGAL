@@ -149,6 +149,11 @@ const de = {
       title: 'EXTRA',
       subtitle: '',
     },
+    exit: {
+      title: 'BEENDEN',
+      subtitle: '',
+      tips: 'Sind Sie sicher, dass Sie das Spiel beenden möchten?',
+    },
   },
 
   gaming: {
@@ -164,6 +169,7 @@ const de = {
       quicklyLoad: 'Quickly Load',
       save: 'Speichern',
       load: 'Laden',
+      fullscrreen: 'Vollbild',
       options: 'Optionen',
       title: 'Titel',
     },

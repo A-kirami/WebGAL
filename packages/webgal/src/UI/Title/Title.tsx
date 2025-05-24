@@ -14,6 +14,7 @@ import useApplyStyle from '@/hooks/useApplyStyle';
 import { fullScreenOption } from '@/store/userDataInterface';
 import { keyboard } from '@/hooks/useHotkey';
 import useConfigData from '@/hooks/useConfigData';
+import { showGlogalDialog } from '../GlobalDialog/GlobalDialog';
 import { __INFO } from '@/config/info';
 
 /**
@@ -28,6 +29,7 @@ const Title: FC = () => {
   const background = GUIState.titleBg;
   const showBackground = background === '' ? 'rgba(0,0,0,1)' : `url("${background}")`;
   const t = useTrans('title.');
+  const tCommon = useTrans('common.');
   const { playSeEnter, playSeClick } = useSoundEffect();
 
   const applyStyle = useApplyStyle('UI/Title/title.scss');
@@ -148,6 +150,24 @@ const Title: FC = () => {
                 </div>
               </div>
             )}
+            <div
+              className={applyStyle('Title_button', styles.Title_button)}
+              onClick={() => {
+                playSeClick();
+                showGlogalDialog({
+                  title: t('exit.tips'),
+                  leftText: tCommon('yes'),
+                  rightText: tCommon('no'),
+                  leftFunc: () => {
+                    window.close();
+                  },
+                  rightFunc: () => {},
+                });
+              }}
+              onMouseEnter={playSeEnter}
+            >
+              <div className={applyStyle('Title_button_text', styles.Title_button_text)} data-content={t('exit.title')}>{t('exit.title')}</div>
+            </div>
           </div>
         </div>
       )}

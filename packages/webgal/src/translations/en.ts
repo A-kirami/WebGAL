@@ -156,6 +156,11 @@ const en = {
       title: 'EXTRA',
       subtitle: '',
     },
+    exit: {
+      title: 'EXIT',
+      subtitle: '',
+      tips: 'Are you sure you want to exit?',
+    },
   },
 
   gaming: {
@@ -171,6 +176,7 @@ const en = {
       quicklyLoad: 'Quickly Load',
       save: 'Save',
       load: 'Load',
+      fullscreen: 'Full Screen',
       options: 'Options',
       title: 'Title',
       titleTips: 'Confirm return to the title screen',

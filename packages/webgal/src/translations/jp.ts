@@ -159,6 +159,11 @@ const jp = {
       title: '鑑賞モード',
       subtitle: 'EXTRA',
     },
+    exit: {
+      title: 'ゲーム終了',
+      subtitle: 'EXIT',
+      tips: 'ゲームを終了しますか？',
+    },
   },
 
   gaming: {
@@ -174,6 +179,7 @@ const jp = {
       quicklyLoad: 'QUICK LOAD',
       save: 'SAVE',
       load: 'LOAD',
+      fullscrren: 'FULLSCREEN',
       options: 'CONFIG',
       title: 'HOME',
       titleTips: 'タイトル画面に戻りますか？',
