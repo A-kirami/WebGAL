@@ -175,7 +175,7 @@ const Title: FC = () => {
       )}
       {GUIState.showTitle && (
         <div className={styles.Title_version_info}>
-          <div>WebGAL BandoriCraft Engine v1.2.0</div>
+          <div>WebGAL BandoriCraft Engine v1.3.0</div>
           <div>(Based on WebGAL v{__INFO.version})</div>
         </div>
       )}
