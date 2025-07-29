@@ -18,6 +18,7 @@ export function useSetFigure(stageState: IStageState) {
     live2dExpression,
     figNameFarLeft,
     figNameFarRight,
+    figureMetaData,
   } = stageState;
 
   /**
@@ -37,6 +38,18 @@ export function useSetFigure(stageState: IStageState) {
       WebGAL.gameplay.pixiStage?.changeModelExpressionByKey(expression.target, expression.expression);
     }
   }, [live2dExpression]);
+
+  /**
+   * 同步元数据
+   */
+  useEffect(() => {
+    Object.entries(figureMetaData).forEach(([key, value]) => {
+      const figureObject = WebGAL.gameplay.pixiStage?.getStageObjByKey(key);
+      if (figureObject && value?.zIndex !== undefined) {
+        figureObject.pixiContainer.zIndex = value.zIndex;
+      }
+    });
+  }, [figureMetaData]);
 
   /**
    * 设置立绘
