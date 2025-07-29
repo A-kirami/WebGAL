@@ -12,6 +12,125 @@ import { compileSentence } from '@/Stage/TextBox/TextBox';
 import { performMouthAnimation } from '@/Core/gameScripts/vocal/vocalAnimation';
 import { match } from '@/Core/util/match';
 
+// 口部动画配置常量
+const MOUTH_ANIMATION_CONFIG = {
+  // 动画帧率控制 (毫秒)
+  frameRate: 16, // 约60fps，保证顺滑动画
+  // 口部开合周期持续时间 (毫秒) - 随机变化以模拟自然说话
+  cycleDuration: {
+    min: 250, // 最小周期
+    max: 350, // 最大周期
+  },
+  // 开合周期之间的停顿时间 (毫秒)
+  pauseBetweenCycles: 0, // 默认不停顿
+  // 口部开到最大后的停留时间 (毫秒)
+  holdAtMaxDuration: 0, // 默认不停留
+  // 口部开合幅度 (0-1)
+  mouthOpenAmplitude: 1, // 固定最大开合幅度
+  // 开合动画的缓动函数
+  easing: (t: number) => Math.sin(t * Math.PI), // 正弦缓动，更自然
+  // 口部状态阈值
+  thresholds: {
+    open: 0.75,
+    halfOpen: 0.25,
+  },
+  // 音频级别映射
+  audioLevelMapping: {
+    min: 50, // 最小音频级别（闭合）
+    max: 100, // 最大音频级别（张开）
+  },
+  // 结束动画阈值
+  endThreshold: 0.95,
+} as const;
+
+// 口部动画状态接口
+interface MouthAnimationState {
+  startTime: number;
+  currentCycleDuration: number;
+  isPaused: boolean;
+  pauseEndTime: number;
+  holdStartTime: number;
+  isHolding: boolean;
+  lastFrameTime: number;
+  isEnding: boolean;
+  cycleStartTime: number;
+  pauseStartTime: number;
+}
+
+// 口部状态类型
+type MouthState = 'open' | 'half_open' | 'closed';
+
+/**
+ * 获取口部状态
+ * @param mouthValue 口部开合值 (0-1)
+ * @returns 口部状态
+ */
+const getMouthState = (mouthValue: number): MouthState => {
+  if (mouthValue > MOUTH_ANIMATION_CONFIG.thresholds.open) {
+    return 'open';
+  } else if (mouthValue > MOUTH_ANIMATION_CONFIG.thresholds.halfOpen) {
+    return 'half_open';
+  } else {
+    return 'closed';
+  }
+};
+
+/**
+ * 应用口部动画
+ * @param params 动画参数
+ */
+const applyMouthAnimation = (params: {
+  targetKey: string;
+  audioLevel: number;
+  animationItem: any;
+  pos: string;
+}) => {
+  const { targetKey, audioLevel, animationItem, pos } = params;
+
+  // 应用口部动画 - 直接调用底层函数，避免插值延迟
+  WebGAL.gameplay.pixiStage?.setModelMouthY(targetKey, audioLevel);
+
+  // 计算口部开合值 (0-1)
+  const mouthValue = (audioLevel - MOUTH_ANIMATION_CONFIG.audioLevelMapping.min) /
+    (MOUTH_ANIMATION_CONFIG.audioLevelMapping.max - MOUTH_ANIMATION_CONFIG.audioLevelMapping.min);
+
+  // 确定口部状态
+  const mouthState = getMouthState(mouthValue);
+
+  // 应用口部同步动画
+  if (animationItem !== undefined) {
+    WebGAL.gameplay.pixiStage?.performMouthSyncAnimation(targetKey, animationItem, mouthState, pos);
+  }
+};
+
+/**
+ * 生成随机周期持续时间
+ * @returns 随机周期持续时间
+ */
+const generateRandomCycleDuration = (): number => {
+  return Math.random() *
+    (MOUTH_ANIMATION_CONFIG.cycleDuration.max - MOUTH_ANIMATION_CONFIG.cycleDuration.min) +
+    MOUTH_ANIMATION_CONFIG.cycleDuration.min;
+};
+
+/**
+ * 初始化口部动画状态
+ * @param currentTime 当前时间
+ * @returns 初始化的动画状态
+ */
+const initializeMouthAnimationState = (currentTime: number): MouthAnimationState => ({
+  startTime: currentTime,
+  currentCycleDuration: generateRandomCycleDuration(),
+  isPaused: false,
+  pauseEndTime: 0,
+  holdStartTime: 0,
+  isHolding: false,
+  lastFrameTime: currentTime,
+  isEnding: false,
+  cycleStartTime: currentTime,
+  pauseStartTime: 0,
+});
+
 /**
  * 进行普通对话的显示
  * @param sentence 语句
@@ -90,7 +209,6 @@ export const say = (sentence: ISentence): IPerform => {
   dispatch(setStage({ key: 'showName', value: showName }));
 
   // 模拟说话
-  let performSimulateVocalTimeout: ReturnType<typeof setTimeout> | null = null;
   let performSimulateVocalDelay = 0;
   let pos = '';
   let key = '';
@@ -117,40 +235,160 @@ export const say = (sentence: ISentence): IPerform => {
       key = `${e.value.toString()}`;
     }
   }
-  let audioLevel = 80;
+
+  // 口部动画状态和ID
+  let mouthAnimationState: MouthAnimationState;
+  let performSimulateVocalAnimationId: number | null = null;
+
   const performSimulateVocal = (end = false) => {
-    let nextAudioLevel = audioLevel + (Math.random() * 60 - 30); // 在 -30 到 +30 之间波动
-    // 确保波动幅度不小于 5
-    if (Math.abs(nextAudioLevel - audioLevel) < 5) {
-      nextAudioLevel = audioLevel + Math.sign(nextAudioLevel - audioLevel) * 5;
-    }
-    // 确保结果在 25 到 100 之间
-    audioLevel = Math.max(15, Math.min(nextAudioLevel, 100));
+    const currentTime = Date.now();
     const currentStageState = webgalStore.getState().stage;
     const figureAssociatedAnimation = currentStageState.figureAssociatedAnimation;
     const animationItem = figureAssociatedAnimation.find((tid) => tid.targetId === key);
     const targetKey = key ? key : `fig-${pos}`;
+
     if (end) {
-      audioLevel = 0;
+      // 标记开始结束动画
+      mouthAnimationState.isEnding = true;
+      // 不立即结束，让动画完成当前周期
     }
-    performMouthAnimation({
+
+    // 检查是否正在结束动画
+    if (mouthAnimationState.isEnding) {
+      // 计算当前周期的时间进度
+      const cycleElapsedTime = currentTime - mouthAnimationState.cycleStartTime;
+      const cycleProgress = (cycleElapsedTime / mouthAnimationState.currentCycleDuration) % 1;
+
+      // 如果当前周期已经完成（接近结束），则真正结束动画
+      if (cycleProgress >= MOUTH_ANIMATION_CONFIG.endThreshold) {
+        // 结束动画，口部闭合
+        applyMouthAnimation({
+          targetKey,
+          audioLevel: MOUTH_ANIMATION_CONFIG.audioLevelMapping.min,
+          animationItem,
+          pos,
+        });
+
+        // 取消动画帧
+        if (performSimulateVocalAnimationId !== null) {
+          cancelAnimationFrame(performSimulateVocalAnimationId);
+          performSimulateVocalAnimationId = null;
+        }
+        return;
+      }
+    }
+
+    // 帧率控制：检查是否需要跳过这一帧
+    if (currentTime - mouthAnimationState.lastFrameTime < MOUTH_ANIMATION_CONFIG.frameRate) {
+      // 如果距离上一帧时间太短，跳过这一帧
+      performSimulateVocalAnimationId = requestAnimationFrame(() => performSimulateVocal());
+      return;
+    }
+    mouthAnimationState.lastFrameTime = currentTime;
+
+    // 检查是否在停顿期间
+    if (mouthAnimationState.isPaused) {
+      if (currentTime >= mouthAnimationState.pauseEndTime) {
+        mouthAnimationState.isPaused = false;
+        // 重新开始当前周期
+        mouthAnimationState.cycleStartTime = currentTime;
+        mouthAnimationState.isHolding = false; // 重置停留状态
+        mouthAnimationState.isEnding = false; // 重置结束状态
+        // 随机生成新的周期持续时间
+        mouthAnimationState.currentCycleDuration = generateRandomCycleDuration();
+      } else {
+        // 仍在停顿中，保持口部闭合
+        applyMouthAnimation({
+          targetKey,
+          audioLevel: MOUTH_ANIMATION_CONFIG.audioLevelMapping.min,
+          animationItem,
+          pos,
+        });
+        performSimulateVocalAnimationId = requestAnimationFrame(() => performSimulateVocal());
+        return;
+      }
+    }
+
+    // 计算当前周期的时间进度
+    const cycleElapsedTime = currentTime - mouthAnimationState.cycleStartTime;
+    const cycleProgress = (cycleElapsedTime / mouthAnimationState.currentCycleDuration) % 1;
+
+    // 检查是否正在停留
+    if (mouthAnimationState.isHolding) {
+      if (currentTime >= mouthAnimationState.holdStartTime + MOUTH_ANIMATION_CONFIG.holdAtMaxDuration) {
+        // 停留结束，继续正常动画
+        mouthAnimationState.isHolding = false;
+        mouthAnimationState.cycleStartTime = currentTime;
+      } else {
+        // 仍在停留中，保持口部开到最大
+        applyMouthAnimation({
+          targetKey,
+          audioLevel: MOUTH_ANIMATION_CONFIG.audioLevelMapping.max,
+          animationItem,
+          pos,
+        });
+
+        performSimulateVocalAnimationId = requestAnimationFrame(() => performSimulateVocal());
+        return;
+      }
+    }
+
+    // 检查是否需要开始新的周期
+    if (cycleElapsedTime >= mouthAnimationState.currentCycleDuration) {
+      mouthAnimationState.cycleStartTime = currentTime;
+      // 随机生成新的周期持续时间
+      mouthAnimationState.currentCycleDuration = generateRandomCycleDuration();
+    }
+
+    // 应用缓动函数
+    const easedProgress = MOUTH_ANIMATION_CONFIG.easing(cycleProgress);
+
+    // 计算口部开合值 (0-1)
+    const mouthValue = easedProgress * MOUTH_ANIMATION_CONFIG.mouthOpenAmplitude;
+
+    // 转换为音频级别，适配setModelMouthY的映射函数
+    // setModelMouthY的映射：value < 50 ? 0 : (value - 50) / 50
+    // 所以我们需要确保value在50-100之间，这样映射后就是0-1
+    const audioLevel = MOUTH_ANIMATION_CONFIG.audioLevelMapping.min +
+      (mouthValue * (MOUTH_ANIMATION_CONFIG.audioLevelMapping.max - MOUTH_ANIMATION_CONFIG.audioLevelMapping.min));
+
+    // 检查是否需要开始停留（当口部开到最大时）
+    if (MOUTH_ANIMATION_CONFIG.holdAtMaxDuration > 0 &&
+        mouthValue >= 0.95 && // 接近最大值时开始停留
+        !mouthAnimationState.isHolding) {
+      mouthAnimationState.isHolding = true;
+      mouthAnimationState.holdStartTime = currentTime;
+    }
+
+    // 检查是否需要停顿（仅在pauseBetweenCycles > 0时）
+    if (MOUTH_ANIMATION_CONFIG.pauseBetweenCycles > 0 &&
+        cycleElapsedTime >= mouthAnimationState.currentCycleDuration &&
+        Math.random() < 0.3) {
+      // 30% 概率在周期之间添加停顿
+      mouthAnimationState.isPaused = true;
+      mouthAnimationState.pauseEndTime = currentTime + MOUTH_ANIMATION_CONFIG.pauseBetweenCycles;
+      mouthAnimationState.pauseStartTime = currentTime; // 记录停顿开始时间
+    }
+
+    // 应用口部动画
+    applyMouthAnimation({
+      targetKey,
       audioLevel,
-      OPEN_THRESHOLD: 50,
-      HALF_OPEN_THRESHOLD: 25,
-      currentMouthValue: 0,
-      lerpSpeed: 1,
-      key: targetKey,
       animationItem,
       pos,
     });
-    if (!end) performSimulateVocalTimeout = setTimeout(performSimulateVocal, 50);
+
+    // 安排下一帧动画
+    performSimulateVocalAnimationId = requestAnimationFrame(() => performSimulateVocal());
   };
+
   // 播放一段语音
   if (vocal) {
     playVocal(sentence);
   } else if (key || pos) {
-    // NOTE: 不使用模拟语音延迟
-    // performSimulateVocalDelay = len * 250;
+    // 初始化口部动画状态
+    const currentTime = Date.now();
+    mouthAnimationState = initializeMouthAnimationState(currentTime);
     performSimulateVocal();
   }
 
@@ -167,10 +405,12 @@ export const say = (sentence: ISentence): IPerform => {
     isHoldOn: false,
     stopFunction: () => {
       WebGAL.events.textSettle.emit();
-      if (performSimulateVocalTimeout) {
-        performSimulateVocal(true);
-        clearTimeout(performSimulateVocalTimeout);
+      if (performSimulateVocalAnimationId !== null) {
+        cancelAnimationFrame(performSimulateVocalAnimationId);
+        performSimulateVocalAnimationId = null;
       }
+      // 正确结束动画
+      performSimulateVocal(true);
     },
     blockingNext: () => false,
     blockingAuto: () => true,
