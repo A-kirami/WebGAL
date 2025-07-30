@@ -241,6 +241,11 @@ export const say = (sentence: ISentence): IPerform => {
   let performSimulateVocalAnimationId: number | null = null;
 
   const performSimulateVocal = (end = false) => {
+    // 如果 mouthAnimationState 未初始化，直接返回
+    if (!mouthAnimationState) {
+      return;
+    }
+
     const currentTime = Date.now();
     const currentStageState = webgalStore.getState().stage;
     const figureAssociatedAnimation = currentStageState.figureAssociatedAnimation;
@@ -409,8 +414,10 @@ export const say = (sentence: ISentence): IPerform => {
         cancelAnimationFrame(performSimulateVocalAnimationId);
         performSimulateVocalAnimationId = null;
       }
-      // 正确结束动画
-      performSimulateVocal(true);
+      // 只有在有动画运行时才正确结束动画
+      if (mouthAnimationState) {
+        performSimulateVocal(true);
+      }
     },
     blockingNext: () => false,
     blockingAuto: () => true,
