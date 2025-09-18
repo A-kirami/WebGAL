@@ -5,7 +5,7 @@ import { webgalStore } from '@/store/store';
 import { setStage } from '@/store/stageReducer';
 import { useTextAnimationDuration, useTextDelay } from '@/hooks/useTextOptions';
 import { getRandomPerformName, PerformController } from '@/Core/Modules/perform/performController';
-import { getSentenceArgByKey } from '@/Core/util/getSentenceArg';
+import { getBooleanArgByKey, getStringArgByKey } from '@/Core/util/getSentenceArg';
 import { textSize, voiceOption } from '@/store/userDataInterface';
 import { WebGAL } from '@/Core/WebGAL';
 import { compileSentence } from '@/Stage/TextBox/TextBox';
@@ -145,11 +145,11 @@ export const say = (sentence: ISentence): IPerform => {
   if (dialogToShow) {
     dialogToShow = String(dialogToShow).replace(/ {2,}/g, (match) => '\u00a0'.repeat(match.length)); // 替换连续两个或更多空格
   }
-  const isConcat = getSentenceArgByKey(sentence, 'concat'); // 是否是继承语句
-  const isNotend = getSentenceArgByKey(sentence, 'notend') as boolean; // 是否有 notend 参数
-  const speaker = getSentenceArgByKey(sentence, 'speaker'); // 获取说话者
-  const clear = getSentenceArgByKey(sentence, 'clear'); // 是否清除说话者
-  const vocal = getSentenceArgByKey(sentence, 'vocal'); // 是否播放语音
+  const isConcat = getBooleanArgByKey(sentence, 'concat') ?? false; // 是否是继承语句
+  const isNotend = getBooleanArgByKey(sentence, 'notend') ?? false; // 是否有 notend 参数
+  const speaker = getStringArgByKey(sentence, 'speaker'); // 获取说话者
+  const clear = getBooleanArgByKey(sentence, 'clear') ?? false; // 是否清除说话者
+  const vocal = getStringArgByKey(sentence, 'vocal'); // 是否播放语音
 
   // 如果是concat，那么就继承上一句的key，并且继承上一句对话。
   if (isConcat) {
@@ -179,27 +179,24 @@ export const say = (sentence: ISentence): IPerform => {
   const len = textNodes.reduce((prev, curr) => prev + curr.length, 0);
   const sentenceDelay = textDelay * len;
 
-  for (const e of sentence.args) {
-    if (e.key === 'fontSize') {
-      switch (e.value) {
-        case 'default':
-          dispatch(setStage({ key: 'showTextSize', value: -1 }));
-          break;
-        case 'small':
-          dispatch(setStage({ key: 'showTextSize', value: textSize.small }));
-          break;
-        case 'medium':
-          dispatch(setStage({ key: 'showTextSize', value: textSize.medium }));
-          break;
-        case 'large':
-          dispatch(setStage({ key: 'showTextSize', value: textSize.large }));
-          break;
-      }
-    }
+  const fontSizeFromArgs = getStringArgByKey(sentence, 'fontSize');
+  switch (fontSizeFromArgs) {
+    case 'small':
+      dispatch(setStage({ key: 'showTextSize', value: textSize.small }));
+      break;
+    case 'medium':
+      dispatch(setStage({ key: 'showTextSize', value: textSize.medium }));
+      break;
+    case 'large':
+      dispatch(setStage({ key: 'showTextSize', value: textSize.large }));
+      break;
+    default:
+      dispatch(setStage({ key: 'showTextSize', value: -1 }));
+      break;
   }
 
   // 设置显示的角色名称
-  let showName: string | number | boolean = stageState.showName; // 先默认继承
+  let showName = stageState.showName; // 先默认继承
   if (speaker !== null) {
     showName = speaker;
   }
@@ -210,33 +207,18 @@ export const say = (sentence: ISentence): IPerform => {
 
   // 模拟说话
   let performSimulateVocalDelay = 0;
-  let pos = '';
-  let key = '';
-  for (const e of sentence.args) {
-    if (e.value === true) {
-      match(e.key)
-        .with('left', () => {
-          pos = 'left';
-        })
-        .with('right', () => {
-          pos = 'right';
-        })
-        .with('far-left', () => {
-          pos = 'far-left';
-        })
-        .with('far-right', () => {
-          pos = 'far-right';
-        })
-        .endsWith('center', () => {
-          pos = 'center';
-        });
-    }
-    if (e.key === 'figureId') {
-      key = `${e.value.toString()}`;
-    }
-  }
 
-  // 口部动画状态和ID
+  let pos: '' | 'center' | 'left' | 'right' = '';
+  const leftFromArgs = getBooleanArgByKey(sentence, 'left') ?? false;
+  const rightFromArgs = getBooleanArgByKey(sentence, 'right') ?? false;
+  const centerFromArgs = getBooleanArgByKey(sentence, 'center') ?? false;
+  if (leftFromArgs) pos = 'left';
+  if (rightFromArgs) pos = 'right';
+  if (centerFromArgs) pos = 'center';
+
+  let key = getStringArgByKey(sentence, 'figureId') ?? '';
+
+    // 口部动画状态和ID
   let mouthAnimationState: MouthAnimationState;
   let performSimulateVocalAnimationId: number | null = null;
 

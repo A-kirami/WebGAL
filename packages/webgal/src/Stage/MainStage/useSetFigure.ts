@@ -16,6 +16,8 @@ export function useSetFigure(stageState: IStageState) {
     freeFigure,
     live2dMotion,
     live2dExpression,
+    live2dBlink,
+    live2dFocus,
     figNameFarLeft,
     figNameFarRight,
     figureMetaData,
@@ -40,12 +42,30 @@ export function useSetFigure(stageState: IStageState) {
   }, [live2dExpression]);
 
   /**
+   * 同步 blink
+   */
+  useEffect(() => {
+    for (const blink of live2dBlink) {
+      WebGAL.gameplay.pixiStage?.changeModelBlinkByKey(blink.target, blink.blink);
+    }
+  }, [live2dBlink]);
+
+  /**
+   * 同步 focus
+   */
+  useEffect(() => {
+    for (const focus of live2dFocus) {
+      WebGAL.gameplay.pixiStage?.changeModelFocusByKey(focus.target, focus.focus);
+    }
+  }, [live2dFocus]);
+
+  /**
    * 同步元数据
    */
   useEffect(() => {
     Object.entries(figureMetaData).forEach(([key, value]) => {
       const figureObject = WebGAL.gameplay.pixiStage?.getStageObjByKey(key);
-      if (figureObject && value?.zIndex !== undefined) {
+      if (figureObject && !figureObject.isExiting && value?.zIndex !== undefined) {
         figureObject.pixiContainer.zIndex = value.zIndex;
       }
     });
