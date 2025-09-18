@@ -112,7 +112,7 @@ export const baseTransform: ITransform = {
   radiusAlphaFilter: 0,
 };
 
-export type IPosition = 'center' | 'left' | 'right' | 'far-left' | 'far-right';
+export type IPosition = 'center' | 'left' | 'right';
 
 export interface IFreeFigure {
   basePosition: IPosition;
