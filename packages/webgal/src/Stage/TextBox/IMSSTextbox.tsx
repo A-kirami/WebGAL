@@ -205,6 +205,7 @@ export default function IMSSTextbox(props: ITextboxProps) {
             style={{
               opacity: `${textboxOpacity / 100}`,
             }}
+            data-auto-play={WebGAL.gameplay.isAuto}
           />
           <div
             id="textBoxMain"

@@ -26,7 +26,21 @@
   opacity: 1 !important;
   box-shadow: 0px 6px 0px rgba(190, 190, 190, 0.8);
   border: 2px solid rgba(190, 190, 190, 0.8);
-  overflow: hidden;
+
+  &[data-auto-play="true"]::before {
+    content: "";
+    width: 100px;
+    height: 27px;
+    display: inline-block;
+    position: absolute;
+    top: 0px;
+    right: 150px;
+    background-image: url("game/template/assets/auto-play.webp");
+    background-position: right top;
+    background-repeat: no-repeat;
+    transform: scale(2);
+    animation: blink 1.2s steps(1) infinite;
+  }
 
   &::after {
     content: "";
@@ -42,7 +56,13 @@
     background-size: 6em;
     opacity: 0.4;
     transform: rotate(4deg);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 120px) 100%, 0 100%);
   }
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
 }
 
 .TextBox_textElement_start {
